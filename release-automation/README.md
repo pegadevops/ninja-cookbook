@@ -1,0 +1,1 @@
+# Ninja release automation
