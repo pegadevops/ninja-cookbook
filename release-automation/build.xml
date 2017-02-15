@@ -1,0 +1,73 @@
+<project>
+    <target name="properties">
+        <echoproperties/>
+    </target>
+ 
+    <target name="bootstrap">
+        <echo message="Starting from ${basedir}"/>
+ 
+        <condition property="maven.plugin.classpath.exists">
+            <available classpath="maven.plugin.classpath" classname="xxx.ant.tasks.BuildChunksTask"/>
+        </condition>
+    </target>
+ 
+ 
+    <target name="init" depends="init.classpath.manually">
+        <typedef name="buildchunks" classname="xxx.ant.tasks.BuildChunksTask" classpathref="maven.plugin.classpath"/>
+        <typedef name="pegaarchive" classname="xxx.tasks.PegaArchiveTask" classpathref="maven.plugin.classpath"/>
+        <typedef name="ruleset" classname="xxx.tasks.RuleSetTask" classpathref="maven.plugin.classpath"/>
+        <typedef name="instance" classname="xxx.tasks.InstanceTask" classpathref="maven.plugin.classpath"/>
+        <typedef name="prop" classname="xxx.tasks.PropertyTask" classpathref="maven.plugin.classpath"/>
+        <typedef name="sqlscripts" classname="xxx.ant.tasks.SqlScriptsTask" classpathref="maven.plugin.classpath"/>
+        <typedef name="pegaactivity" classname="xxx.tasks.PegaActivityTask" classpathref="maven.plugin.classpath"/>
+        <typedef name="parameter" classname="xxx.tasks.PegaActivityParameter" classpathref="maven.plugin.classpath"/>
+        <typedef name="was" classname="xxx.ant.tasks.WasScriptTask" classpathref="maven.plugin.classpath"/>
+    </target>
+ 
+    <target name="build" depends="bootstrap,package"/>
+ 
+    <target name="package" depends="init">
+        <property name="dir.src.resources" value="${basedir}/src/main/resources"/>
+        <property name="dir.staging" value="${dir.build}/staging"/>
+ 
+        <mkdir dir="${dir.staging}"/>
+        <copy todir="${dir.staging}" flatten="true">
+            <path refid="maven.plugin.classpath"/>
+        </copy>
+        <copy file="${dir.staging}/xsd-app-${project.version}.ear" tofile="${dir.staging}/xsd-app.ear"/>
+ 
+        <buildchunks builddir="${dir.build}">
+            <sqlscripts chunkidprefix="db-pega-" chunksdir="${basedir}/src/main/dbscripts" componentid="pega-db"/>
+ 
+            <was chunkid="xsd-app" componentid="was" filesstagingdir="${dir.staging}">
+                api.deploy('@@xsd-app.ear@@', 'xsd_app', '#{was.deployment.target}');
+            </was>
+ 
+            <pegaarchive chunkid="rules-main" componentid="pega-webapp">
+                <ruleset name="MyRuleSet" shallow="true" versions="[01-01:01-02]" appcontext="MyApp 01.02.01"/>
+                <ruleset name="..." />
+            </pegaarchive>
+ 
+            <pegaarchive chunkid="data-main" componentid="pega-webapp">
+                <instance inskey="DATA-ADMIN-OPERATOR-ACCESSGROUP MYAPP:USERS"
+                          property="pyDefaultAppVersion" propertyvalue="#{ag.myag.application.version}"/>
+                <instance inskey="DATA-ADMIN-ORGANIZATION MYORG"/>
+                <instance inskey="DATA-ADMIN-ORGDIVISION MYORG!MYDIV"/>
+                <instance inskey="DATA-ADMIN-ORGUNIT MYORG!MYDIV!ADMINISTRATORS"/>
+                <instance inskey="DATA-ADMIN-OPERATOR-ID SERVICE@MYORG"/>
+                <instance inskey="DATA-EMAILACCOUNT MYORG-MYFW-WORK!NOTIFY">
+                    <prop reference="pyEmailAddress" value="#{email.fw.notify.account.id}"/>
+                    <prop reference="pyFromFullName" value="#{email.fw.notify.account.title}"/>
+                    <prop reference="pyReceiverUserID" value="#{email.fw.notify.account.id}"/>
+                </instance>
+                <instances classname="MYORG-FW-App-Data-Ref-RequestTypes"/>
+            </pegaarchive>
+        </buildchunks>
+ 
+        <delete dir="${dir.staging}"/>
+ 
+        <copy todir="${dir.build}">
+            <fileset dir="${dir.src.resources}"/>
+        </copy>
+    </target>
+</project>
