@@ -1,5 +1,5 @@
 # Ninja release automation
-With Ninja you to build your entire solution using [Ant](http://ant.apache.org)-script. You can include multiple chunks of different types into a single distribution package:
+With Ninja you build your entire solution using [Ant](http://ant.apache.org)-script. You can include multiple chunks of different types into a single distribution package:
 * Pega-archive
 * SQL-scripts
 * AppServer management scripts  
