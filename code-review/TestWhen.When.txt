@@ -4,19 +4,20 @@ Brief Info
     Label    : Test When
     Avail    : Yes
     RuleSet  : TVSApp_Dev:01-01-03
-    Check-In : NJA-007 Ninja Code Review
+    Check-In : NJA-008 check creation date
 
 Warnings
     Moderate
         [Ninja] Please provide description on History tab. Adequate description helps others developers to use this rule properly thus promoting reuse.
 
 Advanced
-    A and (B or C) and D
+    A and (B or C) and (D or E)
 
     A : @String.isAlphaNumeric('y')
     B : 1 + 1 = 3-1
     C : created within the last 3 days
     D : Rule Never evaluates to true
+    E : .pxCreateDateTime is in the Past
 
 Parameters
 
