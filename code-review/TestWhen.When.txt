@@ -1,0 +1,23 @@
+Brief Info
+    Type     : Rule-Obj-When
+    Id       : TVSOrg-TVSApp-Work-CoR TestWhen
+    Label    : Test When
+    Avail    : Yes
+    RuleSet  : TVSApp_Dev:01-01-03
+    Check-In : checked
+
+Warnings
+    Moderate
+        [Ninja] Please provide description on History tab. Adequate description helps others developers to use this rule properly thus promoting reuse.
+
+Advanced
+    A and (B or C) and D
+
+    A : @String.isAlphaNumeric('x')
+    B : 1 + 1 = 2
+    C : created within the last 3 days
+    D : Rule Always evaluates to true
+
+Parameters
+
+
